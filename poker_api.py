@@ -310,7 +310,16 @@ def helper_icon_img(url):
 
 
 
+# -- Stored Procedures start here -------------------------------------------------------------------------------
+
+
 # RUN STORED PROCEDURES
+
+def get_new_matrixUID(conn):
+    newMatrixQuery = execute("call poker.new_matrix_uid()", 'get', conn)
+    if newMatrixQuery['code'] == 280:
+        return newMatrixQuery['result'][0]['new_id']
+    return "Could not generate new game UID", 500
 
 
 #  -----------------------------------------  PROGRAM ENDPOINTS START HERE  -----------------------------------------
@@ -349,11 +358,16 @@ class pre_flop_tables_post(Resource):
             # print to Received data to Terminal
             print("Received:", data)
 
-            preflop_uid = data["preflop_uid"]
+            # preflop_uid = data["preflop_uid"]
             player_type = data["player_type"]
             position  = data["position"]
             preflop_table = data["preflop_table"]
-            print(preflop_uid)
+            
+
+
+            new_preflop_uid = get_new_matrixUID(conn)
+            print(new_preflop_uid)
+            print(getNow())
 
             # user_uid = data["user_uid"]
             # num_rounds = data["rounds"]
@@ -370,7 +384,7 @@ class pre_flop_tables_post(Resource):
 
             query = """
                 INSERT INTO poker.pre_flop_decision_table 
-                SET preflop_uid = \'""" + preflop_uid + """\',
+                SET preflop_uid = \'""" + new_preflop_uid + """\',
                     player_type = \'""" + player_type + """\',
                     position = \'""" + position + """\',
                     preflop_table = \"""" + preflop_table + """\"

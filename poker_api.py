@@ -406,6 +406,7 @@ class pre_flop_tables_post(Resource):
             print("items: ", items)
             if items["code"] == 281:
                 response["message"] = "Create Table successful"
+                response["new UID"] = new_preflop_uid
                 # response["game_code"] = str(game_code)
                 # response["game_uid"] = str(new_game_uid)
                 return response, 200

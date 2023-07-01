@@ -348,6 +348,49 @@ class pre_flop_tables(Resource):
         finally:
             disconnect(conn)
 
+    def post(self):
+        response = {}
+        items = {}
+        try:
+            conn = connect()
+            data = request.get_json(force=True)
+            # print to Received data to Terminal
+            print("Received:", data)
+
+            # preflop_uid = data["preflop_uid"]
+            player_type = data["player_type"]
+            position  = data["position"]
+            preflop_table = data["preflop_table"]
+            
+
+
+            new_preflop_uid = get_new_matrixUID(conn)
+            print(new_preflop_uid)
+            print(getNow())
+
+
+            query = """
+                INSERT INTO poker.pre_flop_decision_table 
+                SET preflop_uid = \'""" + new_preflop_uid + """\',
+                    player_type = \'""" + player_type + """\',
+                    position = \'""" + position + """\',
+                    preflop_table = \"""" + preflop_table + """\"
+                    """
+
+            # print(query)
+            items = execute(query, "post", conn)
+            print("items: ", items)
+            if items["code"] == 281:
+                response["message"] = "Create Table successful"
+                response["new UID"] = new_preflop_uid
+                # response["game_code"] = str(game_code)
+                # response["game_uid"] = str(new_game_uid)
+                return response, 200
+        except:
+            raise BadRequest("Create Table Request failed")
+        finally:
+            disconnect(conn)
+
 class pre_flop_tables_post(Resource):
     def post(self):
         response = {}
